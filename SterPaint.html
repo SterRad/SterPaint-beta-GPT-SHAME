@@ -749,7 +749,28 @@
     .modePill.modeTheory .dot{ background:#9aa4ae; }
     .modePill.modeOptimal .dot{ background:var(--ok); }
     .modePill.modeCustom .dot{ background:var(--accent); }
-
+ 
+ #spSamplesBtn{
+      position:fixed;
+      top:6px;
+      right:8px;
+      z-index:9999;
+      font-family:Arial,Helvetica,sans-serif;
+      font-size:12px;
+      font-weight:600;
+      line-height:1;
+      padding:3px 6px;
+      border-radius:6px;
+      background:#ffd080;
+      color:#3a250f;
+      text-decoration:none;
+      opacity:0.82;
+      box-shadow:0 2px 8px rgba(0,0,0,.28);
+    }
+    #spSamplesBtn:hover{
+      opacity:1;
+    }
+	
 </style>
 </head>
 <body class="noSliders">
@@ -5799,7 +5820,23 @@ function normalizeFieldsLayout(){
 
 </script>
 
+<script>
+(function(){
+  try{
+    const host = location.hostname.toLowerCase();
+    if(host.includes("github.io")){
+      const btn = document.getElementById("spSamplesBtn");
+      if(btn) btn.style.display="block";
+    }
+  }catch(e){}
+})();
+</script>
+
+
+
 <div id="spHud" style="position:fixed;left:8px;top:8px;z-index:99999;min-width:220px;max-width:48vw;background:rgba(0,0,0,0.70);color:#fff;font:12px/1.25 monospace;padding:8px 10px;border-radius:8px;pointer-events:none;white-space:pre-wrap;display:none"></div>
+
+<a href="index.html" id="spSamplesBtn" style="display:none">Samples</a>
 
 </body>
 </html>

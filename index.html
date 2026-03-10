@@ -1,12 +1,501 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="hu">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="refresh" content="0; url=SterPaint.html">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SterPaint-beta GPT-SHAME</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SterPaint / Nyitóoldal</title>
+<style>
+:root{
+  --bg:#6b4a2e;
+  --panel:rgba(255,255,255,0.10);
+  --panel2:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.18);
+  --text:#fff8ee;
+  --muted:#f2dbc2;
+  --accent:#ffd080;
+  --accent2:#ffe7b8;
+  --shadow:0 10px 28px rgba(0,0,0,0.28);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:linear-gradient(180deg,#6b4a2e 0%, #7a5434 100%);
+  color:var(--text);
+  min-height:100vh;
+}
+a{color:inherit}
+.wrap{
+  max-width:1180px;
+  margin:0 auto;
+  padding:24px 18px 40px;
+}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:20px;
+}
+.brand{
+  font-size:clamp(28px,4vw,48px);
+  font-weight:700;
+  letter-spacing:0.5px;
+}
+.lang{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.lang button{
+  border:1px solid var(--border);
+  background:rgba(255,255,255,0.10);
+  color:var(--text);
+  padding:10px 14px;
+  border-radius:12px;
+  cursor:pointer;
+  font-size:15px;
+  font-weight:700;
+}
+.lang button.active{
+  background:var(--accent);
+  color:#3a250f;
+  border-color:#f7d188;
+}
+.hero{
+  display:grid;
+  grid-template-columns:1.15fr 0.85fr;
+  gap:18px;
+  margin-bottom:20px;
+}
+.card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(4px);
+}
+.heroMain{
+  padding:24px 22px 20px;
+}
+.heroMain h1{
+  margin:0 0 12px;
+  font-size:clamp(28px,4vw,42px);
+  line-height:1.1;
+}
+.heroMain p{
+  margin:10px 0;
+  color:var(--muted);
+  font-size:18px;
+  line-height:1.5;
+}
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:18px;
+}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:48px;
+  padding:12px 18px;
+  border-radius:14px;
+  text-decoration:none;
+  font-weight:700;
+  font-size:16px;
+  border:1px solid var(--border);
+  transition:transform .08s ease, background .15s ease;
+}
+.btn:hover{transform:translateY(-1px)}
+.btnPrimary{
+  background:var(--accent);
+  color:#39230e;
+  border-color:#f1cc82;
+}
+.btnSoft{
+  background:rgba(255,255,255,0.10);
+  color:var(--text);
+}
+.sideInfo{
+  padding:20px;
+}
+.sideInfo h2{
+  margin:0 0 12px;
+  font-size:22px;
+}
+.sideInfo ul{
+  margin:0;
+  padding-left:20px;
+  color:var(--muted);
+  line-height:1.6;
+}
+.sideInfo li{margin:6px 0}
+.sectionTitle{
+  margin:26px 0 12px;
+  font-size:24px;
+  font-weight:700;
+}
+.sectionText{
+  color:var(--muted);
+  margin:0 0 18px;
+  line-height:1.6;
+}
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+.galleryPanel{
+  padding:16px;
+}
+.galleryHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+}
+.galleryHead h3{
+  margin:0;
+  font-size:22px;
+}
+.smallLink{
+  font-size:14px;
+  color:var(--accent2);
+  text-decoration:none;
+}
+.items{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:12px;
+}
+.item{
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+}
+.thumb{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  aspect-ratio:4/3;
+  background:rgba(255,255,255,0.06);
+}
+.thumb img{
+  max-width:100%;
+  max-height:100%;
+  display:block;
+}
+.fileIcon{
+  font-size:44px;
+  opacity:0.92;
+}
+.itemBody{
+  padding:10px;
+}
+.name{
+  font-size:14px;
+  font-weight:700;
+  line-height:1.35;
+  word-break:break-word;
+  margin-bottom:8px;
+}
+.meta{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:10px;
+}
+.rowBtns{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.miniBtn{
+  flex:1 1 auto;
+  text-align:center;
+  text-decoration:none;
+  background:rgba(255,255,255,0.10);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:8px 10px;
+  border-radius:10px;
+  font-size:13px;
+  font-weight:700;
+}
+.loading,.empty,.error{
+  color:var(--muted);
+  padding:12px 2px 2px;
+  line-height:1.5;
+}
+.footer{
+  margin-top:28px;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.5;
+}
+.hidden{display:none !important}
+@media (max-width:900px){
+  .hero,.grid2{grid-template-columns:1fr}
+}
+</style>
 </head>
 <body>
-  <p>Átirányítás… ha nem történik meg, kattints: <a href="SterPaint.html">SterPaint</a></p>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">SterPaint</div>
+    <div class="lang">
+      <button id="btnHU" class="active" type="button">Magyar</button>
+      <button id="btnEN" type="button">English</button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="card heroMain">
+      <div class="langHU">
+        <h1>SterPaint nyitóoldal</h1>
+        <p>
+          A SterPaint egy sztereogram-készítő és kísérleti festőprogram.
+          A program mellett itt közvetlenül elérhetők a minta
+          <strong>Pattern</strong> és <strong>DepthMAP</strong> fájlok is.
+        </p>
+		<p>
+A SterPaint program jobb felső sarkában egy kis
+<strong>Samples</strong> gomb található.
+Erre kattintva bármikor visszatérhetsz erre a nyitóoldalra,
+ahonnan a <strong>Pattern</strong> és <strong>DepthMAP</strong>
+minták böngészhetők.
+</p>
+        <p>
+          Az alábbi galériák a GitHub repo aktuális tartalmából épülnek fel,
+          ezért a mappák frissítése után automatikusan az új fájlok jelennek meg.
+        </p>
+      </div>
+      <div class="langEN hidden">
+        <h1>SterPaint opening page</h1>
+        <p>
+          SterPaint is a stereogram generator and experimental painting tool.
+          In addition to the program itself, sample <strong>Pattern</strong>
+          and <strong>DepthMAP</strong> files are available here directly.
+        </p>
+		<p>
+A small <strong>Samples</strong> button appears in the
+upper-right corner of the SterPaint program.
+Clicking it returns to this page, where the
+<strong>Pattern</strong> and <strong>DepthMAP</strong>
+sample galleries can be browsed.
+</p>
+        <p>
+          The galleries below are built from the current GitHub repository
+          contents, so newly uploaded files appear automatically.
+        </p>
+      </div>
+
+      <div class="actions">
+        <a class="btn btnPrimary" href="SterPaint.html">SterPaint.html</a>
+        <a class="btn btnSoft" href="SterPaint_auto_gallery.html">Galéria / Gallery</a>
+        <a class="btn btnSoft" href="#patternSection">Pattern</a>
+        <a class="btn btnSoft" href="#depthSection">DepthMAP</a>
+      </div>
+    </div>
+
+    <div class="card sideInfo">
+      <div class="langHU">
+        <h2>Röviden</h2>
+        <ul>
+          <li>A program a <strong>SterPaint.html</strong> linken indítható.</li>
+          <li>A képek és minták az alábbi automatikus galériából tölthetők le.</li>
+          <li>A GitHub Pages nem listáz mappát közvetlenül, ezért kell ez a galériaoldal.</li>
+          <li>A repo-ba új fájlok feltöltése után pár perc kellhet, mire minden frissül.</li>
+        </ul>
+      </div>
+      <div class="langEN hidden">
+        <h2>In brief</h2>
+        <ul>
+          <li>Start the program from the <strong>SterPaint.html</strong> link.</li>
+          <li>Sample files can be downloaded from the automatic galleries below.</li>
+          <li>GitHub Pages does not expose folder listings directly, so this gallery page is needed.</li>
+          <li>After uploading new files, GitHub Pages may need a few minutes to refresh.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="langHU">
+    <div class="sectionTitle">Automatikus mintagalériák</div>
+    <p class="sectionText">
+      Itt a repo aktuális <strong>Pattern</strong> és <strong>DepthMAP</strong> mappái láthatók.
+      Képfájl esetén bélyegkép jelenik meg, más típusoknál közvetlen megnyitás és letöltés érhető el.
+    </p>
+  </div>
+  <div class="langEN hidden">
+    <div class="sectionTitle">Automatic sample galleries</div>
+    <p class="sectionText">
+      These panels show the current <strong>Pattern</strong> and <strong>DepthMAP</strong> folders of the repository.
+      Image files are displayed as thumbnails; other file types can be opened or downloaded directly.
+    </p>
+  </div>
+
+  <div class="grid2">
+    <section class="card galleryPanel" id="patternSection">
+      <div class="galleryHead">
+        <h3>Pattern</h3>
+        <a class="smallLink" href="SterPaint_auto_gallery.html#pattern">külön oldal / separate page</a>
+      </div>
+      <div id="patternList" class="loading">Betöltés / Loading...</div>
+    </section>
+
+    <section class="card galleryPanel" id="depthSection">
+      <div class="galleryHead">
+        <h3>DepthMAP</h3>
+        <a class="smallLink" href="SterPaint_auto_gallery.html#depth">külön oldal / separate page</a>
+      </div>
+      <div id="depthList" class="loading">Betöltés / Loading...</div>
+    </section>
+  </div>
+
+  <div class="footer">
+    <div class="langHU">
+      Ha a repo neve vagy tulajdonosa változna, akkor a HTML fájlokban az API-címeket is át kell írni.
+    </div>
+    <div class="langEN hidden">
+      If the repository owner or repository name changes, the API URLs inside these HTML files must be updated as well.
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const OWNER = "SterRad";
+  const REPO = "SterPaint";
+  const BRANCH = "main";
+
+  const btnHU = document.getElementById("btnHU");
+  const btnEN = document.getElementById("btnEN");
+
+  function setLang(lang){
+    const showHU = lang === "hu";
+    document.documentElement.lang = showHU ? "hu" : "en";
+    document.querySelectorAll(".langHU").forEach(el => el.classList.toggle("hidden", !showHU));
+    document.querySelectorAll(".langEN").forEach(el => el.classList.toggle("hidden", showHU));
+    btnHU.classList.toggle("active", showHU);
+    btnEN.classList.toggle("active", !showHU);
+    try{
+      localStorage.setItem("sterpaint_lang", lang);
+    }catch(e){}
+  }
+
+  btnHU.addEventListener("click", function(){ setLang("hu"); });
+  btnEN.addEventListener("click", function(){ setLang("en"); });
+
+  let initialLang = "hu";
+  try{
+    const saved = localStorage.getItem("sterpaint_lang");
+    if(saved === "hu" || saved === "en"){
+      initialLang = saved;
+    }
+  }catch(e){}
+  setLang(initialLang);
+
+  function extOf(name){
+    const p = name.lastIndexOf(".");
+    return p >= 0 ? name.slice(p + 1).toLowerCase() : "";
+  }
+
+  function isImage(name){
+    const ext = extOf(name);
+    return ["png","jpg","jpeg","bmp","gif","webp","svg"].includes(ext);
+  }
+
+  function prettySize(bytes){
+    if(!(bytes >= 0)){ return ""; }
+    if(bytes < 1024){ return bytes + " B"; }
+    if(bytes < 1024 * 1024){ return (bytes / 1024).toFixed(1) + " KB"; }
+    return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+  }
+
+  function esc(s){
+    return String(s)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;");
+  }
+
+  function buildCard(file){
+    const image = isImage(file.name);
+    const thumb = image
+      ? '<div class="thumb"><img src="' + esc(file.download_url) + '" alt="' + esc(file.name) + '" loading="lazy"></div>'
+      : '<div class="thumb"><div class="fileIcon">📄</div></div>';
+
+    const openLabel = (document.documentElement.lang === "hu") ? "Megnyitás" : "Open";
+    const downLabel = (document.documentElement.lang === "hu") ? "Letöltés" : "Download";
+
+    return '' +
+      '<article class="item">' +
+        thumb +
+        '<div class="itemBody">' +
+          '<div class="name">' + esc(file.name) + '</div>' +
+          '<div class="meta">' + esc(extOf(file.name).toUpperCase() || "FILE") + ' · ' + esc(prettySize(file.size)) + '</div>' +
+          '<div class="rowBtns">' +
+            '<a class="miniBtn" href="' + esc(file.download_url) + '" target="_blank" rel="noopener">' + openLabel + '</a>' +
+            '<a class="miniBtn" href="' + esc(file.download_url) + '" download>' + downLabel + '</a>' +
+          '</div>' +
+        '</div>' +
+      '</article>';
+  }
+
+  async function loadFolder(folderName, targetId){
+    const target = document.getElementById(targetId);
+    const apiUrl = "https://api.github.com/repos/" + OWNER + "/" + REPO + "/contents/" + encodeURIComponent(folderName) + "?ref=" + encodeURIComponent(BRANCH);
+
+    try{
+      const res = await fetch(apiUrl, { cache:"no-store" });
+      if(!res.ok){
+        target.className = "error";
+        target.textContent = "Hiba / Error: " + folderName + " (" + res.status + ")";
+        return;
+      }
+
+      const data = await res.json();
+      const files = Array.isArray(data) ? data.filter(x => x && x.type === "file") : [];
+
+      if(!files.length){
+        target.className = "empty";
+        target.textContent = (document.documentElement.lang === "hu")
+          ? "A mappa jelenleg üres."
+          : "This folder is currently empty.";
+        return;
+      }
+
+      files.sort(function(a,b){
+        return a.name.localeCompare(b.name, undefined, { numeric:true, sensitivity:"base" });
+      });
+
+      target.className = "items";
+      target.innerHTML = files.map(buildCard).join("");
+    }catch(err){
+      target.className = "error";
+      target.textContent = (document.documentElement.lang === "hu")
+        ? "Nem sikerült beolvasni a mappa tartalmát."
+        : "Could not load folder contents.";
+    }
+  }
+
+  function reloadTexts(){
+    loadFolder("Pattern", "patternList");
+    loadFolder("DepthMAP", "depthList");
+  }
+
+  btnHU.addEventListener("click", reloadTexts);
+  btnEN.addEventListener("click", reloadTexts);
+
+  loadFolder("Pattern", "patternList");
+  loadFolder("DepthMAP", "depthList");
+})();
+</script>
 </body>
 </html>
