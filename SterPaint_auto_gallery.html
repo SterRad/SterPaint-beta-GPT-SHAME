@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SterPaint Automatic Gallery</title>
+<style>
+:root{
+  --bg:#6b4a2e;
+  --panel:rgba(255,255,255,0.10);
+  --panel2:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.18);
+  --text:#fff8ee;
+  --muted:#f2dbc2;
+  --accent:#ffd080;
+  --shadow:0 10px 28px rgba(0,0,0,0.28);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--text);
+  background:linear-gradient(180deg,#6b4a2e 0%, #7a5434 100%);
+  min-height:100vh;
+}
+.wrap{
+  max-width:1280px;
+  margin:0 auto;
+  padding:20px 16px 34px;
+}
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+.title{
+  font-size:clamp(28px,4vw,42px);
+  font-weight:700;
+}
+.nav{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.nav a, .nav button{
+  min-height:44px;
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,0.10);
+  color:var(--text);
+  text-decoration:none;
+  font-weight:700;
+  cursor:pointer;
+}
+.nav button.active{
+  background:var(--accent);
+  color:#3b250e;
+  border-color:#efca80;
+}
+.card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+}
+.intro{
+  padding:18px 18px 16px;
+  margin-bottom:18px;
+}
+.intro p{
+  margin:8px 0;
+  color:var(--muted);
+  line-height:1.55;
+  font-size:17px;
+}
+.section{
+  padding:16px;
+  margin-bottom:18px;
+}
+.sectionHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.sectionHead h2{
+  margin:0;
+  font-size:26px;
+}
+.small{
+  color:var(--muted);
+  font-size:14px;
+}
+.items{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+  gap:14px;
+}
+.item{
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+}
+.thumb{
+  width:100%;
+  aspect-ratio:4/3;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,255,255,0.06);
+}
+.thumb img{
+  max-width:100%;
+  max-height:100%;
+  display:block;
+}
+.fileIcon{
+  font-size:48px;
+  opacity:0.92;
+}
+.body{
+  padding:10px;
+}
+.name{
+  font-size:14px;
+  font-weight:700;
+  line-height:1.35;
+  word-break:break-word;
+  margin-bottom:7px;
+}
+.meta{
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:10px;
+}
+.actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.btn{
+  flex:1 1 auto;
+  text-align:center;
+  text-decoration:none;
+  padding:8px 10px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,0.10);
+  color:var(--text);
+  font-size:13px;
+  font-weight:700;
+}
+.loading,.empty,.error{
+  color:var(--muted);
+  line-height:1.55;
+  padding:10px 2px 2px;
+}
+.hidden{display:none !important}
+@media (max-width:700px){
+  .sectionHead h2{font-size:22px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="title">SterPaint Automatic Gallery</div>
+    <div class="nav">
+      <a href="index.html">Nyitóoldal / Home</a>
+      <a href="SterPaint.html">SterPaint</a>
+      <a href="#pattern">Pattern</a>
+      <a href="#depth">DepthMAP</a>
+      <button id="huBtn" type="button" class="active">Magyar</button>
+      <button id="enBtn" type="button">English</button>
+    </div>
+  </div>
+
+  <section class="card intro">
+    <div class="langHU">
+      <p>
+        Ez az oldal a GitHub repo aktuális <strong>Pattern</strong> és <strong>DepthMAP</strong> mappáit olvassa be.
+        Nem kell kézzel karbantartani a fájllistát: az újonnan feltöltött fájlok automatikusan megjelennek.
+      </p>
+      <p>
+        Képfájloknál bélyegkép látható, más fájloknál ikon jelenik meg.
+        A gombokkal a fájl megnyitható vagy letölthető.
+      </p>
+    </div>
+    <div class="langEN hidden">
+      <p>
+        This page reads the current <strong>Pattern</strong> and <strong>DepthMAP</strong> folders from the GitHub repository.
+        No manual file list maintenance is needed: newly uploaded files appear automatically.
+      </p>
+      <p>
+        Image files are shown as thumbnails, while other files use a file icon.
+        Buttons allow direct opening or downloading.
+      </p>
+    </div>
+  </section>
+
+  <section class="card section" id="pattern">
+    <div class="sectionHead">
+      <h2>Pattern</h2>
+      <div class="small">GitHub API</div>
+    </div>
+    <div id="patternList" class="loading">Betöltés / Loading...</div>
+  </section>
+
+  <section class="card section" id="depth">
+    <div class="sectionHead">
+      <h2>DepthMAP</h2>
+      <div class="small">GitHub API</div>
+    </div>
+    <div id="depthList" class="loading">Betöltés / Loading...</div>
+  </section>
+</div>
+
+<script>
+(function(){
+  const OWNER = "SterRad";
+  const REPO = "SterPaint";
+  const BRANCH = "main";
+
+  const huBtn = document.getElementById("huBtn");
+  const enBtn = document.getElementById("enBtn");
+
+  function setLang(lang){
+    const hu = lang === "hu";
+    document.documentElement.lang = hu ? "hu" : "en";
+    document.querySelectorAll(".langHU").forEach(el => el.classList.toggle("hidden", !hu));
+    document.querySelectorAll(".langEN").forEach(el => el.classList.toggle("hidden", hu));
+    huBtn.classList.toggle("active", hu);
+    enBtn.classList.toggle("active", !hu);
+    try{
+      localStorage.setItem("sterpaint_lang", lang);
+    }catch(e){}
+  }
+
+  huBtn.addEventListener("click", function(){
+    setLang("hu");
+    reloadAll();
+  });
+  enBtn.addEventListener("click", function(){
+    setLang("en");
+    reloadAll();
+  });
+
+  let initialLang = "hu";
+  try{
+    const saved = localStorage.getItem("sterpaint_lang");
+    if(saved === "hu" || saved === "en"){
+      initialLang = saved;
+    }
+  }catch(e){}
+  setLang(initialLang);
+
+  function extOf(name){
+    const p = name.lastIndexOf(".");
+    return p >= 0 ? name.slice(p + 1).toLowerCase() : "";
+  }
+
+  function isImage(name){
+    return ["png","jpg","jpeg","bmp","gif","webp","svg"].includes(extOf(name));
+  }
+
+  function prettySize(bytes){
+    if(!(bytes >= 0)){ return ""; }
+    if(bytes < 1024){ return bytes + " B"; }
+    if(bytes < 1024 * 1024){ return (bytes / 1024).toFixed(1) + " KB"; }
+    return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+  }
+
+  function esc(s){
+    return String(s)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;");
+  }
+
+  function buildCard(file){
+    const img = isImage(file.name);
+    const openText = (document.documentElement.lang === "hu") ? "Megnyitás" : "Open";
+    const downText = (document.documentElement.lang === "hu") ? "Letöltés" : "Download";
+
+    return '' +
+      '<article class="item">' +
+        '<div class="thumb">' +
+          (img
+            ? '<img src="' + esc(file.download_url) + '" alt="' + esc(file.name) + '" loading="lazy">'
+            : '<div class="fileIcon">📄</div>') +
+        '</div>' +
+        '<div class="body">' +
+          '<div class="name">' + esc(file.name) + '</div>' +
+          '<div class="meta">' + esc(extOf(file.name).toUpperCase() || "FILE") + ' · ' + esc(prettySize(file.size)) + '</div>' +
+          '<div class="actions">' +
+            '<a class="btn" href="' + esc(file.download_url) + '" target="_blank" rel="noopener">' + openText + '</a>' +
+            '<a class="btn" href="' + esc(file.download_url) + '" download>' + downText + '</a>' +
+          '</div>' +
+        '</div>' +
+      '</article>';
+  }
+
+  async function loadFolder(folderName, targetId){
+    const target = document.getElementById(targetId);
+    target.className = "loading";
+    target.textContent = (document.documentElement.lang === "hu") ? "Betöltés..." : "Loading...";
+
+    const apiUrl = "https://api.github.com/repos/" + OWNER + "/" + REPO + "/contents/" + encodeURIComponent(folderName) + "?ref=" + encodeURIComponent(BRANCH);
+
+    try{
+      const res = await fetch(apiUrl, { cache:"no-store" });
+      if(!res.ok){
+        target.className = "error";
+        target.textContent = "HTTP " + res.status + " - " + folderName;
+        return;
+      }
+
+      const json = await res.json();
+      const files = Array.isArray(json) ? json.filter(x => x && x.type === "file") : [];
+
+      if(files.length === 0){
+        target.className = "empty";
+        target.textContent = (document.documentElement.lang === "hu")
+          ? "A mappa jelenleg üres."
+          : "This folder is currently empty.";
+        return;
+      }
+
+      files.sort(function(a,b){
+        return a.name.localeCompare(b.name, undefined, { numeric:true, sensitivity:"base" });
+      });
+
+      target.className = "items";
+      target.innerHTML = files.map(buildCard).join("");
+    }catch(err){
+      target.className = "error";
+      target.textContent = (document.documentElement.lang === "hu")
+        ? "Hiba a beolvasás közben."
+        : "Error while loading folder contents.";
+    }
+  }
+
+  function reloadAll(){
+    loadFolder("Pattern", "patternList");
+    loadFolder("DepthMAP", "depthList");
+  }
+
+  reloadAll();
+})();
+</script>
+</body>
+</html>
