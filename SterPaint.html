@@ -1278,7 +1278,6 @@
 </div>
 </div>
 </div>
-<div class="helpWinHint"><span class="kbd">F1</span> <span data-i18n="help_hint">Súgó</span></div>
 </div>
 </div>
 </div>
@@ -2688,12 +2687,12 @@ if (zoomNum){
       depthScale: 0.35,
       preSmoothOn: true,
       preSmoothIter: 2,
-      preSmoothSigmaR: 0.80,
-      deltaGain: 0.25,
-      dispDither: 0.00,
+      preSmoothSigmaR: 14,
+      deltaGain: 8,
+      dispDither: 0.60,
       dispQuant: "round",
-      comfortMul: 1.00,
-      steepMode: "left"
+      comfortMul: 0.35,
+      steepMode: "pattern"
     };
 
     function _setNum(id, v){
@@ -2713,18 +2712,19 @@ if (zoomNum){
     }
 
     function _applyNeutral(){
-      // Algorithm-affecting fine-tunes (keep WHITE WINDOW state as-is):
+      // "Theoretical" = no pre-smoothing, no disparity dithering.
+      // Keep all values inside the controls' valid domains.
       _setNum("depthScale", 0.35);
       _setChk("preSmoothOn", false);
-      _setNum("preSmoothIter", 0);
-      _setNum("preSmoothSigmaR", 0);
-      _setNum("deltaGain", 0);
-      _setNum("deltaGainNum", 0);
+      _setNum("preSmoothIter", 1);
+      _setNum("preSmoothSigmaR", 14);
+      _setNum("deltaGain", 8);
+      _setNum("deltaGainNum", 8);
       _setNum("dispDither", 0);
       _setNum("dispDitherNum", 0);
       _setSel("dispQuant", "round");
-      _setNum("comfortMul", 1.0);
-      _setNum("comfortMulNum", 1.0);
+      _setNum("comfortMul", 0.35);
+      _setNum("comfortMulNum", 0.35);
       _setSel("steepMode", "left");
     }
 
@@ -2969,7 +2969,7 @@ if (zoomNum){
 
   function readFiniteNumber(el, fallback, lo, hi){
     if (!el) return fallback;
-    const raw = String(el.value);
+    const raw = String(el.value).replace(",", ".");
     let v = Number(raw);
     if (!Number.isFinite(v)) v = fallback;
     if (Number.isFinite(lo)) v = Math.max(lo, v);
@@ -3942,7 +3942,6 @@ function rebuildPatternForCurrentXB(reason){
   function regenerateStereoAndChains(){
     try{
     S._genCount = (S._genCount | 0) + 1;
-    _hudSet("BOOT OK\nGEN #" + S._genCount);
     S.xB = clampInt(parseInt(xBInput.value, 10) || 96, 2, 4096);
     const _prevDepthScale = Number.isFinite(S.depthScale) ? S.depthScale : 0.35;
     S.depthScale = readFiniteNumber(depthScaleInput, _prevDepthScale, 0, 8);
@@ -4077,7 +4076,6 @@ function rebuildPatternForCurrentXB(reason){
     let _chk = 2166136261 >>> 0;
     for (let i=0; i<S.gRGBA.length; i+=64){ _chk ^= S.gRGBA[i]; _chk = Math.imul(_chk, 16777619) >>> 0; }
     S._lastChk = _chk >>> 0;
-    _hudSet("BOOT OK\nGEN #" + S._genCount + "\nCHK " + ("00000000" + S._lastChk.toString(16)).slice(-8));
     render();
     } catch (e){
       _hudSet('JS ERROR\n' + (e && e.stack ? e.stack : String(e)));
@@ -4675,39 +4673,43 @@ function setPixelFuzer(x,y,rgba){
     const max = Number(rangeEl.max);
     const step = Number(rangeEl.step) || 1;
 
-    const apply = (v) => {
-      let x = Number(v);
-      if (!Number.isFinite(x)) x = Number(rangeEl.value);
+    const apply = (v, snap) => {
+      const raw = String(v).replace(",", ".");
+      let x = Number(raw);
+      if (!Number.isFinite(x)) x = Number(String(rangeEl.value).replace(",", "."));
+      if (!Number.isFinite(x)) x = 0;
       if (Number.isFinite(min)) x = Math.max(min, x);
       if (Number.isFinite(max)) x = Math.min(max, x);
-      x = snapToStep(x, step);
-      // keep nice formatting
+      if (snap) x = snapToStep(x, step);
+
       const isInt = Math.abs(step - Math.round(step)) < 1e-9;
-      rangeEl.value = String(x);
-      numEl.value = isInt ? String(Math.round(x)) : String(x);
-      onChange(Number(rangeEl.value));
+      const shown = isInt ? String(Math.round(x)) : String(x);
+      numEl.value = shown;
+
+      // Range inputs can only represent their own stepped domain.
+      const rangeValue = snapToStep(x, step);
+      rangeEl.value = String(rangeValue);
+
+      onChange(x);
     };
 
-    rangeEl.addEventListener("input", () => apply(rangeEl.value));
+    rangeEl.addEventListener("input", () => apply(rangeEl.value, true));
 
     // Allow "in-progress" edits (empty / "-" / "."), commit on blur/change/Enter.
-    numEl.addEventListener("input", () => {
-      // Do not apply while typing; commit on blur/change/Enter.
-      // Keep in-progress text as-is; we only validate/commit later.
-    });
+    numEl.addEventListener("input", () => {});
     numEl.addEventListener("change", () => {
-      const s = String(numEl.value);
-      if (s === "" || s === "-" || s === "." || s === "-.") { numEl.value = String(rangeEl.value); return; }
-      apply(s);
+      const s = String(numEl.value).trim();
+      if (s === "" || s === "-" || s == "." || s === "-." || s === "," || s === "-,") { numEl.value = String(rangeEl.value); return; }
+      apply(s, false);
     });
     numEl.addEventListener("blur", () => {
-      const s = String(numEl.value);
-      if (s === "" || s === "-" || s === "." || s === "-.") { numEl.value = String(rangeEl.value); return; }
-      apply(s);
+      const s = String(numEl.value).trim();
+      if (s === "" || s === "-" || s == "." || s === "-." || s === "," || s === "-,") { numEl.value = String(rangeEl.value); return; }
+      apply(s, false);
     });
     numEl.addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); numEl.blur(); } });
 
-    apply(rangeEl.value);
+    apply(rangeEl.value, true);
   }
 
   // --- Regenerate guard ---
@@ -4875,7 +4877,7 @@ function setPixelFuzer(x,y,rgba){
     finePresetMarkCustom();
     S.steepMode = steepModeSel.value;
     S.lastMsg = `steepMode = ${S.steepMode}`;
-    setHUD();
+    maybeRegenerate((LANG==="en") ? "Steep mode changed" : "Meredek mód változott");
   });
 
   dispQuantSel.addEventListener("change", () => {
@@ -5832,11 +5834,56 @@ function normalizeFieldsLayout(){
 })();
 </script>
 
-
-
 <div id="spHud" style="position:fixed;left:8px;top:8px;z-index:99999;min-width:220px;max-width:48vw;background:rgba(0,0,0,0.70);color:#fff;font:12px/1.25 monospace;padding:8px 10px;border-radius:8px;pointer-events:none;white-space:pre-wrap;display:none"></div>
 
 <a href="index.html" id="spSamplesBtn" style="display:none">Samples</a>
+
+<script>
+(function(){
+  try{
+    const host = location.hostname.toLowerCase();
+    if(host.includes("github.io")){
+      const btn = document.getElementById("spSamplesBtn");
+      if(btn) btn.style.display = "block";
+    }
+  }catch(e){}
+})();
+</script>
+<script>
+/* Finomítás számmezők javítása */
+(function(){
+
+  const inputs = document.querySelectorAll('input[type="number"]');
+
+  inputs.forEach(inp => {
+
+    /* ha nincs step, legyen értelmes */
+    if(!inp.step || inp.step === "any"){
+      if(inp.id.toLowerCase().includes("scale") ||
+         inp.id.toLowerCase().includes("sigma") ||
+         inp.id.toLowerCase().includes("dither") ||
+         inp.id.toLowerCase().includes("mul")){
+        inp.step = "0.1";
+      } else {
+        inp.step = "1";
+      }
+    }
+
+    /* ne korlátozzuk túl */
+    inp.removeAttribute("min");
+    inp.removeAttribute("max");
+
+    /* vessző → pont */
+    inp.addEventListener("input", function(){
+      if(this.value.includes(",")){
+        this.value = this.value.replace(",",".");
+      }
+    });
+
+  });
+
+})();
+</script>
 
 </body>
 </html>
