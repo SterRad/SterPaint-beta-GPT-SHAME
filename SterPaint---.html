@@ -223,7 +223,7 @@
     }
 
     
-    /* --- v1.7j: user request - no sliders (range) in UI --- */
+    /* --- v1.6j: user request - no sliders (range) in UI --- */
     /* --- RA: compact UI (details moved to Help) --- */
     .topNote.helpLong{ display:none; }
     .topNote.helpShort{ display:none; }
@@ -585,7 +585,7 @@
 
   
 
-    /* --- v1.7t UI compaction + numbering/color badges --- */
+    /* --- v1.6t UI compaction + numbering/color badges --- */
     .left .helpShort, .left .helpLong{ display:none !important; }
     .left .hint[data-i18n="intro_short"]{ display:none !important; }
     .left #depthInfo{ display:block !important; } /* keep depth meta visible */
@@ -649,7 +649,7 @@
     .helpItemText{ color:#e9edf3; font-size:14px; line-height:1.35; }
     .helpItemText code{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:13px; }
 
-    /* --- v1.7u: compact panel + move explanations to Help --- */
+    /* --- v1.6u: compact panel + move explanations to Help --- */
     .left .hint{ display:none !important; }
     .left .helpShort, .left .helpLong{ display:none !important; }
     /* Masonry-like controls layout to reduce wasted space */
@@ -664,7 +664,7 @@
       break-inside: avoid;
     }
 
-    /* --- 0..6 dropdown menu groups (v1.7w) --- */
+    /* --- 0..6 dropdown menu groups (v1.6w) --- */
     .menuGroup{
       border:1px solid var(--line);
       border-radius:12px;
@@ -777,7 +777,7 @@
 <div class="wrap" id="app">
 <div class="left">
 <h1>
-<span>SterPaint v1.7v</span>
+<span>SterPaint v1.6v</span>
 <span class="hdrRight">
 <button class="ghost" id="btnLang" title="HU/EN" type="button">HU</button>
 <button class="ghost" data-i18n="help_btn" id="btnHelp" title="F1" type="button">Súgó</button>
@@ -3091,7 +3091,7 @@ if (zoomNum){
     const comfort = Math.round(S.xB * S.comfortMul);
     const sel = S.selActive ? `sel=[${S.selX0},${S.selY0}]..[${S.selX1},${S.selY1}]` : "sel=none";
     hud.textContent =
-`SterPaint v1.7
+`SterPaint v1.5
 W=${S.W} (xB=${S.xB} + xD=${S.xD}), H=${S.H}
 finePreset=${S.finePreset}
 depthScale=${S.depthScale.toFixed(2)}  maxDisp=${maxDisp}px  comfort>${comfort}px
@@ -3648,7 +3648,7 @@ ${S.lastMsg}`;
     return out;
   }
 
-  // --- v1.7k: pattern resize policy (keep aspect ratio) ---
+  // --- v1.6k: pattern resize policy (keep aspect ratio) ---
   function buildPatternKeepAspectFromRGBA(srcRGBA, srcW, srcH, dstW, dstH, flipY){
     // scale to dstW with preserved aspect ratio
     const scaledH = Math.max(1, Math.round(srcH * dstW / Math.max(1, srcW)));
